@@ -1,0 +1,743 @@
+<title>Lao Coffee Site Bench</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..800&family=Gloock&family=Hanken+Grotesk:wght@400;500;600;700&family=Noto+Sans+Lao:wght@600;800&family=Noto+Sans+Lao+Looped:wght@400;500;600&family=Noto+Serif+Lao:wght@500;700&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --b-bg:#0F0D0C; --b-panel:#161311; --b-ink:#E7DED2; --b-ink2:#A99D8F; --b-line:rgba(231,222,210,.12);
+  --b-font:"Hanken Grotesk","Noto Sans Lao Looped",system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{background:var(--b-bg);color:var(--b-ink);font-family:var(--b-font);font-size:14px;line-height:1.5}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid #E7DED2;outline-offset:2px}
+
+/* ---------- bench chrome ---------- */
+.bench{display:grid;grid-template-columns:288px minmax(0,1fr);min-height:100vh}
+.panel{background:var(--b-panel);border-right:1px solid var(--b-line);padding:24px 20px 32px;display:flex;flex-direction:column;gap:22px;position:sticky;top:env(safe-area-inset-top,0px);height:100vh;overflow-y:auto}
+.panel h1{font-size:16px;font-weight:700;margin:0;letter-spacing:.01em}
+.panel .sub{color:var(--b-ink2);margin:4px 0 0;font-size:13px}
+.grp{display:grid;gap:8px}
+.grp-l{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--b-ink2)}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{border:1px solid var(--b-line);background:transparent;border-radius:999px;padding:7px 12px;font-size:13px;color:var(--b-ink2);transition:background .15s,color .15s,border-color .15s}
+.seg button:hover{color:var(--b-ink);border-color:rgba(231,222,210,.3)}
+.seg button[aria-pressed="true"]{background:var(--b-ink);color:#15100D;border-color:var(--b-ink);font-weight:600}
+.seg button:active{transform:translateY(1px)}
+.sw{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.tokens{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 10px;font-size:12px;color:var(--b-ink2)}
+.tokens div{display:flex;align-items:center;gap:8px}
+.tokens i{width:18px;height:18px;border-radius:4px;border:1px solid var(--b-line);flex:none}
+.tokens code{font-family:ui-monospace,Consolas,monospace;font-size:11px;color:var(--b-ink)}
+.fontlist{margin:0;padding:0;list-style:none;font-size:12px;color:var(--b-ink2);display:grid;gap:4px}
+.fontlist b{color:var(--b-ink);font-weight:600}
+.note{font-size:12px;color:var(--b-ink2);border-top:1px solid var(--b-line);padding-top:16px;margin:0}
+.stage{padding:28px 24px;display:flex;justify-content:center;align-items:flex-start;min-width:0}
+.fbox{position:relative;flex:none}
+.frame{position:absolute;top:0;left:0;transform-origin:0 0;background:#050404}
+.frame.phone{border-radius:54px;padding:12px;box-shadow:0 0 0 1px #2b2522,0 30px 80px rgba(0,0,0,.55)}
+.frame.tablet{border-radius:36px;padding:18px;box-shadow:0 0 0 1px #2b2522,0 30px 80px rgba(0,0,0,.55)}
+.frame.desktop{border-radius:12px;padding:0;box-shadow:0 0 0 1px #2b2522,0 30px 80px rgba(0,0,0,.55);overflow:hidden}
+.urlbar{display:none;height:40px;align-items:center;justify-content:center;background:#1b1715;border-bottom:1px solid #2b2522}
+.frame.desktop .urlbar{display:flex}
+.urlbar span{font-size:12px;color:#A99D8F;background:#0F0D0C;border-radius:999px;padding:5px 18px;min-width:340px;text-align:center;font-family:ui-monospace,Consolas,monospace}
+.frame.phone .skin{border-radius:42px}
+.frame.tablet .skin{border-radius:18px}
+
+@media (max-width:900px){
+  .bench{grid-template-columns:minmax(0,1fr)}
+  .panel{position:static;height:auto;border-right:0;border-bottom:1px solid var(--b-line);padding:18px 16px 20px;gap:16px}
+  .stage{padding:20px 16px 40px}
+  .tokens{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+
+/* ---------- site skin (tokens) ---------- */
+.skin{
+  --bg:#15100D; --bg2:#1D1612; --bg3:#2A201B;
+  --ink:#EEE3D1; --ink2:#BBAA95; --line:rgba(238,227,209,.14); --line2:rgba(238,227,209,.38);
+  --accent:#CF7A3E; --on-accent:#15100D;
+  --f-display:"Gloock","Noto Serif Lao",Georgia,serif; --d-w:400; --d-tt:none; --d-st:100%; --d-tr:-.012em;
+  --f-body:"Hanken Grotesk","Noto Sans Lao Looped",system-ui,sans-serif;
+  --ease:cubic-bezier(.16,1,.3,1);
+  container-type:inline-size; container-name:site;
+  position:relative; overflow:hidden; background:var(--bg); color:var(--ink);
+  font-family:var(--f-body); font-size:16px; line-height:1.6;
+}
+.skin.acc-cherry{--accent:#DA5C48}
+.skin.acc-crema{--accent:#D9A75E}
+.skin.face-cond{--f-display:"Archivo","Noto Sans Lao",system-ui,sans-serif; --d-w:750; --d-tt:uppercase; --d-st:68%; --d-tr:0}
+.screen{height:100%;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}
+.frame.phone .screen,.frame.tablet .screen{scrollbar-width:none}
+.frame.phone .screen::-webkit-scrollbar,.frame.tablet .screen::-webkit-scrollbar{display:none}
+.frame.desktop .screen{scrollbar-color:#4a3e36 #15100D}
+
+.skin a{color:inherit;text-decoration:none}
+.skin p{margin:0}
+.skin img{display:block;width:100%;height:100%;object-fit:cover;max-width:100%}
+.skin figure{margin:0}
+.skin ul,.skin ol{margin:0;padding:0;list-style:none}
+.skin dl,.skin dd{margin:0}
+.skin button{background:none;border:0;padding:0}
+.ic{display:inline-flex;width:1.1em;height:1.1em;flex:none}
+.ic svg{width:100%;height:100%}
+
+.d1,.d2,.d3,.d4,.wm{font-family:var(--f-display);font-weight:var(--d-w);text-transform:var(--d-tt);font-stretch:var(--d-st);letter-spacing:var(--d-tr);text-wrap:balance;margin:0}
+.d1{font-size:clamp(2.5rem,8.6cqi,5.6rem);line-height:1.02}
+.d1.sm{font-size:clamp(2.3rem,6.6cqi,4.5rem)}
+.d2{font-size:clamp(1.95rem,4.8cqi,3.5rem);line-height:1.06}
+.d3{font-size:clamp(1.45rem,2.6cqi,2rem);line-height:1.12}
+.d4{font-size:1.3rem;line-height:1.2}
+.face-cond .d1{font-size:clamp(2.9rem,10cqi,6.6rem);line-height:.95}
+.face-cond .d1.sm{font-size:clamp(2.6rem,7.6cqi,5.2rem)}
+.face-cond .d2{font-size:clamp(2.2rem,5.6cqi,4rem);line-height:.98}
+.face-cond .d3{font-size:clamp(1.6rem,3cqi,2.3rem);line-height:1.02}
+.face-cond .d4{font-size:1.45rem;line-height:1.05}
+/* Lao needs room for stacked vowels and tone marks */
+.skin:lang(lo) .d1,.skin:lang(lo) .d2,.skin:lang(lo) .d3,.skin:lang(lo) .d4{letter-spacing:0;line-height:1.38;word-break:keep-all;overflow-wrap:anywhere}
+.skin:lang(lo) .d1{font-size:clamp(2.1rem,6.6cqi,4.3rem)}
+.skin:lang(lo) .d1.sm{font-size:clamp(2rem,5.4cqi,3.6rem)}
+.skin:lang(lo) .d2{font-size:clamp(1.7rem,3.9cqi,2.8rem)}
+.skin:lang(lo) .d3{font-size:clamp(1.3rem,2.2cqi,1.7rem)}
+.skin:lang(lo){line-height:1.8}
+.skin:lang(lo) .lbl{letter-spacing:0;text-transform:none}
+
+.wrap{max-width:1280px;margin-inline:auto;padding-inline:20px}
+.lede{font-size:1.125rem;color:var(--ink2);max-width:52ch}
+.body{color:var(--ink2);max-width:60ch}
+.lbl{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--ink2)}
+.small{font-size:13px;color:var(--ink2)}
+.num{font-variant-numeric:tabular-nums}
+
+.btn{display:inline-flex;align-items:center;gap:10px;height:50px;padding-inline:24px;border-radius:999px;font-weight:600;font-size:15px;white-space:nowrap;transition:transform .15s var(--ease),filter .2s,background .2s,border-color .2s}
+.btn .ic{transition:transform .3s var(--ease)}
+.btn:hover .ic{transform:translateX(3px)}
+.btn:active{transform:translateY(1px) scale(.99)}
+.btn.pri{background:var(--accent);color:var(--on-accent)}
+.btn.pri:hover{filter:brightness(1.08)}
+.btn.ghost{border:1px solid var(--line2);color:var(--ink)}
+.btn.ghost:hover{border-color:var(--ink)}
+.tlink{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:var(--ink);border-bottom:1px solid var(--line2);padding-bottom:2px}
+.tlink:hover{border-color:var(--accent)}
+.tlink .ic{transition:transform .3s var(--ease)}
+.tlink:hover .ic{transform:translateX(3px)}
+
+.ph{overflow:hidden;background:var(--bg3)}
+.ph img{transition:transform .8s var(--ease)}
+
+/* header */
+.hd{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.hd-in{display:flex;align-items:center;justify-content:space-between;height:64px;gap:24px}
+.wm{font-size:1.5rem;line-height:1;white-space:nowrap}
+.face-cond .wm{font-size:1.7rem}
+.nav{display:none;gap:30px;font-size:15px}
+.nav a{color:var(--ink2);padding-block:6px;border-bottom:2px solid transparent;transition:color .2s}
+.nav a:hover{color:var(--ink)}
+.nav a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--accent)}
+.hd-r{display:flex;align-items:center;gap:14px}
+.lang{display:flex;align-items:center;gap:2px;font-size:14px}
+.lang button{padding:6px 8px;color:var(--ink2);border-radius:999px}
+.lang button[aria-pressed="true"]{color:var(--ink);background:var(--bg3)}
+.menu-btn{display:inline-flex;width:40px;height:40px;align-items:center;justify-content:center;border-radius:999px;border:1px solid var(--line)!important;font-size:20px}
+
+.menu{position:absolute;inset:0;z-index:40;background:var(--bg);display:flex;flex-direction:column;padding:0 20px 28px;opacity:0;visibility:hidden;transform:translateY(-10px);transition:opacity .25s var(--ease),transform .35s var(--ease),visibility 0s .35s}
+.menu.open{opacity:1;visibility:visible;transform:none;transition:opacity .25s var(--ease),transform .35s var(--ease)}
+.menu-top{display:flex;align-items:center;justify-content:space-between;height:65px;border-bottom:1px solid var(--line)}
+.menu-links{display:grid;gap:4px;padding-block:28px;flex:1}
+.menu-links a{padding-block:10px;display:flex;align-items:center;justify-content:space-between}
+.menu-links a[aria-current="page"]{color:var(--accent)}
+.menu-foot{display:grid;gap:14px;border-top:1px solid var(--line);padding-top:20px}
+
+/* hero */
+.hero{position:relative;min-height:620px;display:flex;align-items:flex-end;overflow:hidden;isolation:isolate}
+.hero-img{position:absolute;inset:0;z-index:-2}
+.hero-img img{object-position:62% 40%}
+.hero-scrim{position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(21,16,13,.1) 0%,rgba(21,16,13,.62) 38%,rgba(21,16,13,.94) 70%,var(--bg) 100%)}
+.hero-img{inset:-1px}
+.hero-in{display:grid;gap:20px;padding-block:48px 56px;max-width:700px}
+.hero .lede{color:#D5C7B4}
+.ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
+
+/* sections */
+.sec{padding-block:76px}
+.pt0{padding-top:0}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.feat-grid{display:grid;gap:36px;margin-top:36px}
+.feat-main{display:grid;gap:18px}
+.feat-main .ph{aspect-ratio:4/5}
+.feat-main:hover img,.card:hover img,.row:hover img,.mini:hover img{transform:scale(1.04)}
+.cap{display:grid;gap:6px}
+.notes{font-size:1.05rem}
+.meta{font-size:13px;color:var(--ink2)}
+.rows{display:grid}
+.row{display:grid;grid-template-columns:84px minmax(0,1fr) auto;gap:16px;align-items:center;padding-block:18px;border-top:1px solid var(--line)}
+.row .ph{aspect-ratio:1}
+.row .ic{color:var(--ink2);transition:transform .3s var(--ease),color .2s}
+.row:hover .ic{transform:translateX(4px);color:var(--accent)}
+.row-t{display:grid;gap:2px;min-width:0}
+
+.origin{background:var(--bg2)}
+.origin-fig{aspect-ratio:4/5}
+.origin-fig img{object-position:50% 40%}
+.origin-body{display:grid;gap:40px;padding-block:56px 80px}
+.origin-txt{display:grid;gap:18px;align-content:start}
+.facts{display:grid}
+.facts div{display:grid;gap:4px;padding-block:18px;border-top:1px solid var(--line)}
+.facts dd{font-family:var(--f-display);font-weight:var(--d-w);font-stretch:var(--d-st);text-transform:var(--d-tt);font-size:1.6rem;line-height:1.15}
+.skin:lang(lo) .facts dd{line-height:1.4;font-size:1.4rem}
+
+.brew-grid{display:grid;gap:40px}
+.brew-fig{aspect-ratio:3/2}
+.brew-txt{display:grid;gap:18px;align-content:start}
+.methods{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:32px 24px;margin-top:20px}
+.m{display:grid;gap:6px;border-top:1px solid var(--line);padding-top:16px;align-content:start}
+.m-name{font-weight:600;font-size:15px}
+.ratio{font-family:var(--f-display);font-weight:var(--d-w);font-stretch:var(--d-st);font-size:2.6rem;line-height:1;color:var(--accent);font-variant-numeric:tabular-nums}
+.m-spec{display:grid;gap:2px;font-size:13px;color:var(--ink2)}
+.m-spec div{display:flex;gap:6px}
+.m-spec dt{color:var(--ink2)}
+.m-spec dd{color:var(--ink)}
+
+.band{position:relative;overflow:hidden;isolation:isolate;padding-block:96px}
+.band-img{position:absolute;inset:0;z-index:-2}
+.band::after{content:"";position:absolute;inset:0;z-index:-1;background:rgba(21,16,13,.74)}
+.band-in{display:grid;gap:28px;justify-items:start}
+.band .d2{max-width:16ch}
+
+.ft{border-top:1px solid var(--line);padding-block:56px 28px}
+.ft-grid{display:grid;gap:32px}
+.ft-nav{display:grid;gap:10px;color:var(--ink2)}
+.ft-nav a:hover{color:var(--ink)}
+.ft-reach{display:grid;gap:10px;color:var(--ink2)}
+.ft-reach span{display:inline-flex;align-items:center;gap:10px}
+.ft-base{margin-top:40px;padding-top:20px;border-top:1px solid var(--line)}
+
+/* beans list */
+.page-head{padding-block:56px 32px}
+.page-head .wrap{display:grid;gap:18px}
+.chips{display:flex;gap:8px;margin-top:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.chips::-webkit-scrollbar{display:none}
+.chip{height:40px;padding-inline:18px!important;border-radius:999px;border:1px solid var(--line)!important;color:var(--ink2)!important;white-space:nowrap;transition:background .2s,color .2s}
+.chip:hover{color:var(--ink)!important}
+.chip[aria-pressed="true"]{background:var(--ink)!important;color:var(--bg)!important;border-color:var(--ink)!important;font-weight:600}
+.bean-grid{display:grid;gap:52px 24px}
+.card{display:grid;gap:18px;align-content:start}
+.card .ph{aspect-ratio:4/5}
+.empty{padding:48px 0;color:var(--ink2)}
+
+/* bean detail */
+.det-grid{display:grid;gap:32px;padding-block:24px 72px}
+.det-fig{aspect-ratio:4/5}
+.det-body{display:grid;gap:22px;align-content:start}
+.back{display:inline-flex;align-items:center;gap:8px;color:var(--ink2);font-size:14px;justify-self:start}
+.back:hover{color:var(--ink)}
+.notes-lg{font-size:1.3rem;line-height:1.45}
+.specs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:24px}
+.specs div{display:grid;gap:2px;padding-block:14px;border-top:1px solid var(--line)}
+.specs dd{font-weight:500}
+.tip{background:var(--bg2);padding:24px;display:grid;gap:10px}
+.tip-row{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap}
+.more-row{display:grid;grid-auto-flow:column;grid-auto-columns:74%;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin-top:28px;padding-bottom:4px}
+.more-row::-webkit-scrollbar{display:none}
+.mini{display:grid;gap:12px;scroll-snap-align:start;align-content:start}
+.mini .ph{aspect-ratio:1}
+
+/* story */
+.full-fig{aspect-ratio:4/3}
+.cap-line{margin-top:12px}
+.prose{display:grid;gap:22px;max-width:62ch}
+.prose p{font-size:1.125rem;color:var(--ink2)}
+.prose p:first-child{font-size:1.35rem;color:var(--ink);line-height:1.5}
+.steps-grid{display:grid;gap:40px}
+.steps-fig{aspect-ratio:3/2}
+.steps-list{counter-reset:s;display:grid;margin-top:28px}
+.steps-list li{display:grid;grid-template-columns:52px minmax(0,1fr);gap:6px 12px;padding-block:22px;border-top:1px solid var(--line)}
+.steps-list li::before{counter-increment:s;content:counter(s);font-family:var(--f-display);font-weight:var(--d-w);font-stretch:var(--d-st);font-size:2rem;line-height:1;color:var(--accent);grid-row:span 2}
+.steps-list h3{font-size:1.1rem;font-weight:600;margin:0}
+.steps-list p{color:var(--ink2)}
+
+/* where to buy */
+.contact-grid{display:grid;gap:48px}
+.place{display:grid;gap:10px;padding-block:28px;border-top:1px solid var(--line)}
+.place .small{display:inline-flex;align-items:center;gap:8px}
+.maplink{display:inline-flex;align-items:center;gap:6px;color:var(--accent);font-weight:600;justify-self:start}
+.maplink:hover{text-decoration:underline;text-underline-offset:4px}
+.reach{background:var(--bg2);display:grid;align-content:start}
+.reach-fig{aspect-ratio:3/2}
+.reach-in{display:grid;gap:18px;padding:24px}
+.reach-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:14px;border-top:1px solid var(--line)}
+.reach-row .v{display:grid;gap:2px;min-width:0}
+.reach-row .v strong{font-weight:600;user-select:all;overflow-wrap:anywhere}
+.copy{height:36px;padding-inline:14px!important;border-radius:999px;border:1px solid var(--line2)!important;font-size:13px;font-weight:600;white-space:nowrap;flex:none}
+.copy:hover{border-color:var(--ink)!important}
+
+/* motion */
+.rv{transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.rv.pre{opacity:0;transform:translateY(22px)}
+.ani .hero-img{animation:settle 1.6s var(--ease) both}
+.ani .hero-in>*{animation:rise .9s var(--ease) both}
+.ani .hero-in>*:nth-child(2){animation-delay:.08s}
+.ani .hero-in>*:nth-child(3){animation-delay:.16s}
+.ani .hero-in>*:nth-child(4){animation-delay:.24s}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}}
+@keyframes settle{from{transform:scale(1.06)}}
+.skin.rm *,.skin.rm *::before,.skin.rm *::after{animation:none!important;transition:none!important}
+
+/* ---------- tablet ---------- */
+@container site (min-width:700px){
+  .wrap{padding-inline:40px}
+  .hero{min-height:680px}
+  .sec{padding-block:96px}
+  .feat-grid{grid-template-columns:1.1fr 1fr;gap:48px;align-items:start}
+  .origin-fig{aspect-ratio:16/9}
+  .origin-body{grid-template-columns:1.1fr .9fr;gap:56px}
+  .methods{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .band-in{grid-template-columns:minmax(0,1fr) auto;align-items:end}
+  .ft-grid{grid-template-columns:2fr 1fr 1.2fr}
+  .page-head{padding-block:80px 40px}
+  .bean-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:64px 32px}
+  .more-row{grid-auto-flow:row;grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible}
+  .full-fig{aspect-ratio:16/9}
+  .steps-fig{aspect-ratio:16/9}
+}
+/* ---------- desktop ---------- */
+@container site (min-width:1080px){
+  .wrap{padding-inline:56px}
+  .nav{display:flex}
+  .menu-btn{display:none}
+  .hero{min-height:720px;align-items:center}
+  .hero-scrim{background:linear-gradient(90deg,var(--bg) 0%,rgba(21,16,13,.86) 32%,rgba(21,16,13,.2) 68%,rgba(21,16,13,.05) 100%),linear-gradient(180deg,transparent 70%,var(--bg) 100%)}
+  .hero-img img{object-position:70% 45%}
+  .hero-in{padding-block:96px}
+  .sec{padding-block:120px}
+  .feat-grid{grid-template-columns:7fr 5fr;gap:72px}
+  .origin-fig{aspect-ratio:21/9}
+  .origin-body{gap:96px;padding-block:80px 112px}
+  .brew-grid{grid-template-columns:5fr 7fr;gap:80px;align-items:start}
+  .brew-fig{aspect-ratio:4/5;position:sticky;top:96px}
+  .methods{grid-template-columns:repeat(2,minmax(0,1fr));gap:40px 32px}
+  .band{padding-block:140px}
+  .bean-grid{gap:40px 72px}
+  .bean-grid .card:nth-child(even of :not([hidden])){margin-top:120px}
+  .det-grid{grid-template-columns:1fr 1fr;gap:80px;padding-block:40px 120px;align-items:start}
+  .det-fig{position:sticky;top:96px}
+  .full-fig{aspect-ratio:21/9}
+  .steps-grid{grid-template-columns:5fr 7fr;gap:80px;align-items:start}
+  .steps-fig{aspect-ratio:4/5;position:sticky;top:96px}
+  .contact-grid{grid-template-columns:7fr 5fr;gap:80px;align-items:start}
+  .page-head{padding-block:112px 48px}
+}
+@media (prefers-reduced-motion:reduce){
+  .skin *,.skin *::before,.skin *::after{animation:none!important;transition:none!important}
+}
+</style>
+
+<div class="bench">
+  <aside class="panel" aria-label="Bench controls">
+    <div>
+      <h1>Brand Name site bench</h1>
+      <p class="sub">Dark roast editorial direction. Pick a page and device, then try the open choices.</p>
+    </div>
+    <div class="grp"><span class="grp-l">Page</span>
+      <div class="seg" data-grp="page">
+        <button data-set="page:home">Home</button><button data-set="page:beans">Our beans</button><button data-set="page:bean">Bean page</button><button data-set="page:story">Story</button><button data-set="page:buy">Where to buy</button>
+      </div></div>
+    <div class="grp"><span class="grp-l">Device</span>
+      <div class="seg" data-grp="device"><button data-set="device:phone">Phone</button><button data-set="device:tablet">Tablet</button><button data-set="device:desktop">Desktop</button></div></div>
+    <div class="grp"><span class="grp-l">Language</span>
+      <div class="seg" data-grp="lang"><button data-set="lang:lo">ລາວ (default)</button><button data-set="lang:en">English</button></div></div>
+    <div class="grp"><span class="grp-l">Accent colour</span>
+      <div class="seg" data-grp="accent">
+        <button data-set="accent:copper"><span class="sw" style="background:#CF7A3E"></span>Roasted copper</button><button data-set="accent:cherry"><span class="sw" style="background:#DA5C48"></span>Coffee cherry</button><button data-set="accent:crema"><span class="sw" style="background:#D9A75E"></span>Crema</button>
+      </div></div>
+    <div class="grp"><span class="grp-l">Heading typeface</span>
+      <div class="seg" data-grp="face"><button data-set="face:serif">Serif</button><button data-set="face:cond">Condensed sans</button></div></div>
+    <div class="grp"><span class="grp-l">Motion</span>
+      <div class="seg" data-grp="rm"><button data-set="rm:0">Full</button><button data-set="rm:1">Reduced</button></div></div>
+    <div class="grp"><span class="grp-l">Locked tokens</span>
+      <div class="tokens">
+        <div><i style="background:#15100D"></i><span>Espresso<br><code>#15100D</code></span></div>
+        <div><i style="background:#1D1612"></i><span>Section<br><code>#1D1612</code></span></div>
+        <div><i style="background:#EEE3D1"></i><span>Cream<br><code>#EEE3D1</code></span></div>
+        <div><i style="background:#BBAA95"></i><span>Muted<br><code>#BBAA95</code></span></div>
+      </div>
+      <ul class="fontlist">
+        <li><b>Serif:</b> Gloock + Noto Serif Lao</li>
+        <li><b>Condensed:</b> Archivo 68% + Noto Sans Lao</li>
+        <li><b>Body:</b> Hanken Grotesk + Noto Sans Lao Looped</li>
+      </ul>
+    </div>
+    <p class="note">Lao copy is a draft translation for layout testing. Have a native speaker check it before the client sees it. Prices, addresses and phone numbers are placeholders.</p>
+  </aside>
+
+  <main class="stage" id="stage">
+    <div class="fbox" id="fbox">
+      <div class="frame phone" id="frame">
+        <div class="urlbar"><span id="url">brandname.la/lo</span></div>
+        <div class="skin" id="skin">
+          <div class="screen" id="screen"><div id="site"></div></div>
+          <div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const IMG = "__IMAGES__";
+const ICON = "__ICONS__";
+const SRC = {};
+for (const k in IMG) {
+  const bin = atob(IMG[k]); const u8 = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+  SRC[k] = URL.createObjectURL(new Blob([u8], { type: "image/jpeg" }));
+}
+
+const T = {
+  nav_home:{en:"Home",lo:"ໜ້າຫຼັກ"}, nav_beans:{en:"Our beans",lo:"ເມັດກາເຟ"}, nav_story:{en:"Our story",lo:"ເລື່ອງລາວຂອງພວກເຮົາ"}, nav_buy:{en:"Where to buy",lo:"ຊື້ໄດ້ທີ່ໃສ"},
+  menu:{en:"Open menu",lo:"ເປີດເມນູ"}, close:{en:"Close menu",lo:"ປິດເມນູ"},
+  hero_eyebrow:{en:"Single-origin coffee from Laos",lo:"ກາເຟແຫຼ່ງດຽວ ຈາກປະເທດລາວ"},
+  hero_h1:{en:"Grown on the Bolaven Plateau. Roasted slowly.",lo:"ປູກເທິງພູພຽງບໍລະເວນ ຂົ້ວແບບຊ້າໆ"},
+  hero_sub:{en:"Arabica from the volcanic soil around Paksong, roasted in small batches every week.",lo:"ອາຣາບິກາຈາກດິນພູເຂົາໄຟອ້ອມເມືອງປາກຊ່ອງ ຂົ້ວເທື່ອລະໜ້ອຍທຸກອາທິດ"},
+  see_beans:{en:"See the beans",lo:"ເບິ່ງເມັດກາເຟ"},
+  feat_h:{en:"This season's beans",lo:"ເມັດກາເຟລະດູນີ້"}, all_beans:{en:"All beans",lo:"ເມັດກາເຟທັງໝົດ"},
+  origin_h:{en:"Coffee from the plateau",lo:"ກາເຟຈາກພູພຽງ"},
+  origin_p:{en:"The Bolaven Plateau in southern Laos is high, cool and wet. Cherries ripen slowly up here, and slow ripening gives the beans more sweetness.",lo:"ພູພຽງບໍລະເວນ ທາງພາກໃຕ້ຂອງລາວ ສູງ ອາກາດເຢັນ ແລະ ຝົນຕົກຫຼາຍ. ໝາກກາເຟຢູ່ທີ່ນີ້ສຸກຊ້າ ເຮັດໃຫ້ເມັດກາເຟມີລົດຫວານຫຼາຍຂຶ້ນ."},
+  origin_alt:{en:"Ripe coffee cherries on a branch on the Bolaven Plateau",lo:"ໝາກກາເຟສຸກເທິງກິ່ງ ຢູ່ພູພຽງບໍລະເວນ"},
+  f_elev:{en:"Elevation",lo:"ຄວາມສູງ"}, f_elev_v:{en:"1,000 to 1,300 m",lo:"1,000 ຫາ 1,300 ແມັດ"},
+  f_where:{en:"Grown around",lo:"ແຫຼ່ງປູກ"}, f_where_v:{en:"Paksong, Champasak",lo:"ປາກຊ່ອງ, ຈຳປາສັກ"},
+  f_harvest:{en:"Harvest",lo:"ລະດູເກັບກ່ຽວ"}, f_harvest_v:{en:"November to February",lo:"ພະຈິກ ຫາ ກຸມພາ"},
+  brew_h:{en:"Brew it at home",lo:"ຊົງກາເຟເອງຢູ່ເຮືອນ"},
+  brew_p:{en:"Start with these ratios and adjust to taste. 1:16 means 1 g of coffee to 16 g of water.",lo:"ເລີ່ມຈາກອັດຕາສ່ວນນີ້ ແລ້ວປັບຕາມໃຈມັກ. 1:16 ໝາຍເຖິງ ກາເຟ 1 ກຣາມ ຕໍ່ນ້ຳ 16 ກຣາມ."},
+  grind:{en:"Grind",lo:"ການບົດ"}, time:{en:"Time",lo:"ເວລາ"},
+  band_h:{en:"Find Brand Name in Vientiane and Pakse",lo:"ຊອກຫາ Brand Name ໄດ້ທີ່ ວຽງຈັນ ແລະ ປາກເຊ"},
+  ft_tag:{en:"Single-origin coffee from the Bolaven Plateau, Laos.",lo:"ກາເຟແຫຼ່ງດຽວ ຈາກພູພຽງບໍລະເວນ ປະເທດລາວ."},
+  ft_credit:{en:"Photos: Unsplash and Wikimedia Commons (Pierre André, CC BY-SA 4.0; Tarrazu, public domain). All text and contact details are placeholders.",lo:"ຮູບພາບ: Unsplash ແລະ Wikimedia Commons (Pierre André, CC BY-SA 4.0; Tarrazu, public domain). ເນື້ອຫາ ແລະ ຂໍ້ມູນຕິດຕໍ່ທັງໝົດເປັນຕົວຢ່າງ."},
+  beans_h:{en:"Our beans",lo:"ເມັດກາເຟຂອງພວກເຮົາ"},
+  beans_p:{en:"Four coffees from southern Laos. Every bag is 250 g, sold as whole beans or ground to order.",lo:"ກາເຟສີ່ຊະນິດຈາກພາກໃຕ້ຂອງລາວ. ແຕ່ລະຖົງ 250 ກຣາມ ມີທັງແບບເມັດ ແລະ ແບບບົດຕາມສັ່ງ."},
+  f_all:{en:"All",lo:"ທັງໝົດ"},
+  light:{en:"Light roast",lo:"ຂົ້ວອ່ອນ"}, medium:{en:"Medium roast",lo:"ຂົ້ວກາງ"}, dark:{en:"Dark roast",lo:"ຂົ້ວເຂັ້ມ"},
+  empty:{en:"No beans with this roast right now.",lo:"ຕອນນີ້ບໍ່ມີກາເຟລະດັບການຂົ້ວນີ້."},
+  s_region:{en:"Region",lo:"ແຫຼ່ງປູກ"}, s_elev:{en:"Elevation",lo:"ຄວາມສູງ"}, s_variety:{en:"Variety",lo:"ສາຍພັນ"}, s_process:{en:"Process",lo:"ການແປຮູບ"}, s_roast:{en:"Roast",lo:"ລະດັບການຂົ້ວ"}, s_bag:{en:"Bag",lo:"ຂະໜາດຖົງ"},
+  bag_v:{en:"250 g, whole or ground",lo:"250 ກຣາມ, ເມັດ ຫຼື ບົດ"},
+  how_brew:{en:"How we brew it",lo:"ວິທີຊົງທີ່ພວກເຮົາແນະນຳ"}, more:{en:"More beans",lo:"ກາເຟອື່ນໆ"},
+  story_h:{en:"From the plateau to your cup",lo:"ຈາກພູພຽງ ເຖິງຈອກກາເຟຂອງທ່ານ"},
+  story_lede:{en:"We buy from small family farms around Paksong, pay for ripe cherries only, and roast every week in Vientiane.",lo:"ພວກເຮົາຊື້ກາເຟຈາກສວນຄອບຄົວນ້ອຍໆ ອ້ອມເມືອງປາກຊ່ອງ ຮັບຊື້ສະເພາະໝາກທີ່ສຸກ ແລະ ຂົ້ວທຸກອາທິດຢູ່ນະຄອນຫຼວງວຽງຈັນ."},
+  story_p1:{en:"Coffee came to the Bolaven Plateau in the early 1900s. Most of it is still grown by families on a few hectares each, often under shade trees.",lo:"ກາເຟເຂົ້າມາປູກຢູ່ພູພຽງບໍລະເວນ ຕັ້ງແຕ່ຕົ້ນຊຸມປີ 1900. ປັດຈຸບັນ ສ່ວນໃຫຍ່ຍັງປູກໂດຍຄອບຄົວຊາວສວນ ຄອບຄົວລະບໍ່ເທົ່າໃດເຮັກຕາ ແລະ ມັກປູກຢູ່ກ້ອງຮົ່ມໄມ້."},
+  story_p2:{en:"We visit at harvest, taste every lot before we buy it, and keep the roast light enough that you can still taste where it was grown.",lo:"ພວກເຮົາໄປຢ້ຽມສວນໃນລະດູເກັບກ່ຽວ ຊີມທຸກລັອດກ່ອນຊື້ ແລະ ຂົ້ວບໍ່ໃຫ້ເຂັ້ມເກີນໄປ ເພື່ອໃຫ້ຍັງໄດ້ລົດຊາດຂອງແຫຼ່ງປູກ."},
+  dry_cap:{en:"Coffee cherries drying on a raised bed.",lo:"ຕາກໝາກກາເຟເທິງແຄ່ສູງ."},
+  steps_h:{en:"How a bean gets to you",lo:"ກວ່າຈະມາເປັນກາເຟໃນຈອກ"},
+  buy_h:{en:"Where to buy",lo:"ຊື້ໄດ້ທີ່ໃສ"},
+  buy_p:{en:"Buy at the roastery or our Pakse shop, or send a message and we deliver in Vientiane.",lo:"ຊື້ໄດ້ທີ່ໂຮງຂົ້ວ ຫຼື ຮ້ານຂອງພວກເຮົາຢູ່ປາກເຊ ຫຼື ສົ່ງຂໍ້ຄວາມມາ ພວກເຮົາສົ່ງເຖິງບ້ານໃນວຽງຈັນ."},
+  open_maps:{en:"Open in Maps",lo:"ເປີດແຜນທີ່"},
+  reach_h:{en:"Order by message",lo:"ສັ່ງຜ່ານຂໍ້ຄວາມ"},
+  reach_p:{en:"Message us on WhatsApp or Facebook. We deliver in Vientiane on Tuesdays and Fridays.",lo:"ສົ່ງຂໍ້ຄວາມຫາພວກເຮົາທາງ WhatsApp ຫຼື Facebook. ສົ່ງເຖິງບ້ານໃນວຽງຈັນ ທຸກວັນອັງຄານ ແລະ ວັນສຸກ."},
+  phone:{en:"Phone and WhatsApp",lo:"ໂທ ແລະ WhatsApp"}, fb:{en:"Facebook",lo:"Facebook"},
+  copy:{en:"Copy",lo:"ສຳເນົາ"}, copied:{en:"Copied",lo:"ສຳເນົາແລ້ວ"},
+};
+const METHODS = [
+  {name:{en:"Pour-over",lo:"ດຣິບ"}, ratio:"1:16", grind:{en:"Medium-fine",lo:"ກາງຄ່ອນລະອຽດ"}, time:{en:"3 min",lo:"3 ນາທີ"}},
+  {name:{en:"French press",lo:"ເຟຣນເພຣສ"}, ratio:"1:15", grind:{en:"Coarse",lo:"ຫຍາບ"}, time:{en:"4 min",lo:"4 ນາທີ"}},
+  {name:{en:"Lao sock filter",lo:"ກາເຟຖົງ"}, ratio:"1:10", grind:{en:"Fine",lo:"ລະອຽດ"}, time:{en:"5 min",lo:"5 ນາທີ"}},
+  {name:{en:"Espresso",lo:"ເອສເປຣສໂຊ"}, ratio:"1:2", grind:{en:"Very fine",lo:"ລະອຽດຫຼາຍ"}, time:{en:"28 sec",lo:"28 ວິນາທີ"}},
+];
+const BEANS = [
+  {slug:"paksong-washed", img:"b1", roast:"light", brew:0,
+   name:{en:"Paksong Washed",lo:"ປາກຊ່ອງ ລ້າງນ້ຳ"}, process:{en:"Washed",lo:"ລ້າງນ້ຳ"}, variety:{en:"Typica",lo:"ທີປິກາ"},
+   region:{en:"Paksong, Champasak",lo:"ປາກຊ່ອງ, ຈຳປາສັກ"}, elev:{en:"1,300 m",lo:"1,300 ແມັດ"},
+   notes:{en:"Jasmine, lemongrass, black tea",lo:"ດອກມະລິ, ຫົວສິງໄຄ, ຊາດຳ"},
+   desc:{en:"Washed at the farm and dried on raised beds. Clean and floral, best as a pour-over without milk.",lo:"ລ້າງທີ່ສວນ ແລະ ຕາກເທິງແຄ່ສູງ. ລົດຊາດສະອາດ ມີກິ່ນດອກໄມ້ ເໝາະກັບການຊົງແບບດຣິບ ບໍ່ໃສ່ນົມ."}},
+  {slug:"bolaven-natural", img:"b2", roast:"medium", brew:1,
+   name:{en:"Bolaven Natural",lo:"ບໍລະເວນ ຕາກແຫ້ງ"}, process:{en:"Natural",lo:"ຕາກແຫ້ງທັງໝາກ"}, variety:{en:"Catimor",lo:"ຄາຕິມໍ"},
+   region:{en:"Bolaven Plateau",lo:"ພູພຽງບໍລະເວນ"}, elev:{en:"1,200 m",lo:"1,200 ແມັດ"},
+   notes:{en:"Ripe mango, cocoa, brown sugar",lo:"ໝາກມ່ວງສຸກ, ໂກໂກ້, ນ້ຳຕານແດງ"},
+   desc:{en:"Dried whole in the cherry, so the fruit sugars stay in the bean. Heavy and sweet, good black or with milk.",lo:"ຕາກແຫ້ງທັງໝາກ ຄວາມຫວານຈາກໝາກຈຶ່ງຊຶມເຂົ້າເມັດ. ເຂັ້ມຂຸ້ນ ແລະ ຫວານ ດື່ມດຳ ຫຼື ໃສ່ນົມກໍໄດ້."}},
+  {slug:"tha-teng-honey", img:"b3", roast:"medium", brew:2,
+   name:{en:"Tha Teng Honey",lo:"ທ່າແຕງ ຮັນນີ່"}, process:{en:"Honey",lo:"ຮັນນີ່"}, variety:{en:"Catimor",lo:"ຄາຕິມໍ"},
+   region:{en:"Tha Teng, Sekong",lo:"ທ່າແຕງ, ເຊກອງ"}, elev:{en:"1,000 m",lo:"1,000 ແມັດ"},
+   notes:{en:"Tamarind, honey, roasted peanut",lo:"ໝາກຂາມ, ນ້ຳເຜິ້ງ, ຖົ່ວດິນຂົ້ວ"},
+   desc:{en:"Dried with some of the fruit left on the bean. Sweet and round, made for a sock filter and condensed milk.",lo:"ຕາກແຫ້ງໂດຍເຫຼືອເນື້ອໝາກໄວ້ບາງສ່ວນ. ຫວານ ກົມກ່ອມ ເໝາະກັບກາເຟຖົງ ໃສ່ນົມຂົ້ນ."}},
+  {slug:"house-espresso", img:"b4", roast:"dark", brew:3,
+   name:{en:"House Espresso",lo:"ເອສເປຣສໂຊ ປະຈຳຮ້ານ"}, process:{en:"Washed and natural",lo:"ລ້າງນ້ຳ ແລະ ຕາກແຫ້ງ"}, variety:{en:"Catimor and Robusta",lo:"ຄາຕິມໍ ແລະ ໂຣບັສຕາ"},
+   region:{en:"Bolaven Plateau",lo:"ພູພຽງບໍລະເວນ"}, elev:{en:"800 to 1,300 m",lo:"800 ຫາ 1,300 ແມັດ"},
+   notes:{en:"Dark chocolate, molasses, toasted rice",lo:"ຊັອກໂກແລັດ, ນ້ຳອ້ອຍ, ເຂົ້າຂົ້ວ"},
+   desc:{en:"Arabica for sweetness and a little Robusta for crema. Made for espresso and milk drinks.",lo:"ອາຣາບິກາໃຫ້ຄວາມຫວານ ແລະ ໂຣບັສຕາເລັກນ້ອຍໃຫ້ຄຣີມາ. ເໝາະກັບເອສເປຣສໂຊ ແລະ ເຄື່ອງດື່ມໃສ່ນົມ."}},
+];
+const STEPS = [
+  {h:{en:"Pick",lo:"ເກັບ"}, p:{en:"Ripe red cherries are picked by hand from November to February.",lo:"ເກັບໝາກກາເຟສີແດງທີ່ສຸກດ້ວຍມື ແຕ່ເດືອນພະຈິກ ຫາ ກຸມພາ."}},
+  {h:{en:"Dry",lo:"ຕາກ"}, p:{en:"Cherries dry on raised beds for two to four weeks and are turned every day.",lo:"ຕາກໝາກກາເຟເທິງແຄ່ສູງ 2 ຫາ 4 ອາທິດ ແລະ ພິກທຸກມື້."}},
+  {h:{en:"Hull and sort",lo:"ສີ ແລະ ຄັດ"}, p:{en:"The dried fruit is milled off and the beans are sorted by size, then by hand.",lo:"ສີເປືອກອອກ ແລ້ວຄັດເມັດຕາມຂະໜາດ ແລະ ຄັດດ້ວຍມືອີກຄັ້ງ."}},
+  {h:{en:"Roast",lo:"ຂົ້ວ"}, p:{en:"We roast small batches every week in Vientiane, so bags reach you within days of roasting.",lo:"ຂົ້ວເທື່ອລະໜ້ອຍທຸກອາທິດຢູ່ວຽງຈັນ ກາເຟຈຶ່ງເຖິງມືທ່ານພາຍໃນບໍ່ເທົ່າໃດມື້ຫຼັງຂົ້ວ."}},
+  {h:{en:"Brew",lo:"ຊົງ"}, p:{en:"Use the beans within a month of the roast date printed on the bag.",lo:"ຄວນໃຊ້ພາຍໃນໜຶ່ງເດືອນ ນັບແຕ່ວັນທີຂົ້ວທີ່ພິມຢູ່ຖົງ."}},
+];
+const PLACES = [
+  {name:{en:"Roastery and shop",lo:"ໂຮງຂົ້ວ ແລະ ຮ້ານ"}, addr:{en:"Ban Sisaket, Chanthabouly District, Vientiane",lo:"ບ້ານສີສະເກດ, ເມືອງຈັນທະບູລີ, ນະຄອນຫຼວງວຽງຈັນ"}, hours:{en:"Monday to Saturday, 7:00 to 17:00",lo:"ວັນຈັນ ຫາ ວັນເສົາ, 7:00 ຫາ 17:00"}, q:"Ban Sisaket Vientiane"},
+  {name:{en:"Pakse shop",lo:"ຮ້ານປາກເຊ"}, addr:{en:"Ban Wat Luang, Pakse, Champasak",lo:"ບ້ານວັດຫຼວງ, ເມືອງປາກເຊ, ແຂວງຈຳປາສັກ"}, hours:{en:"Every day, 7:00 to 18:00",lo:"ທຸກມື້, 7:00 ຫາ 18:00"}, q:"Wat Luang Pakse"},
+];
+const PHONE = "+856 20 5555 0142", FB = "facebook.com/brandname";
+
+/* ---------- state ---------- */
+const reduceOS = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const state = {page:"home", bean:"bolaven-natural", lang:"lo", accent:"copper", face:"serif", device:"phone", rm:reduceOS ? "1" : "0", roast:"all"};
+try { Object.assign(state, JSON.parse(localStorage.getItem("cb-bench") || "{}")); } catch (e) {}
+const save = () => { try { localStorage.setItem("cb-bench", JSON.stringify(state)); } catch (e) {} };
+
+const $ = (id) => document.getElementById(id);
+const site = $("site"), screen = $("screen"), skin = $("skin"), menu = $("menu"), frame = $("frame"), fbox = $("fbox"), stage = $("stage");
+const L = (o) => (o[state.lang] ?? o.en);
+const t = (k) => L(T[k]);
+const ic = (n) => `<span class="ic" aria-hidden="true">${ICON[n]}</span>`;
+const img = (k, alt = "") => `<img src="${SRC[k]}" alt="${alt}" loading="lazy" decoding="async">`;
+const bean = (s) => BEANS.find((b) => b.slug === s) || BEANS[0];
+const meta = (b) => `${L(b.process)} · ${t(b.roast)}`;
+const NAV = [["home","nav_home"],["beans","nav_beans"],["story","nav_story"],["buy","nav_buy"]];
+const cur = (p) => (state.page === p || (p === "beans" && state.page === "bean")) ? ' aria-current="page"' : "";
+
+/* ---------- templates ---------- */
+const langSw = () => `<div class="lang" role="group" aria-label="Language"><button data-lang="lo" aria-pressed="${state.lang==="lo"}" lang="lo">ລາວ</button><button data-lang="en" aria-pressed="${state.lang==="en"}" lang="en">EN</button></div>`;
+const header = () => `
+<header class="hd"><div class="wrap hd-in">
+  <a href="#home" class="wm" data-go="home">Brand Name</a>
+  <nav class="nav" aria-label="Main">${NAV.map(([p,k]) => `<a href="#${p}" data-go="${p}"${cur(p)}>${t(k)}</a>`).join("")}</nav>
+  <div class="hd-r">${langSw()}<button class="menu-btn" data-menu-open aria-label="${t("menu")}" aria-expanded="false">${ic("list")}</button></div>
+</div></header>`;
+const menuHTML = () => `
+<div class="menu-top"><span class="wm">Brand Name</span><button class="menu-btn" data-menu-close aria-label="${t("close")}" style="display:inline-flex">${ic("x")}</button></div>
+<nav class="menu-links" aria-label="Main">${NAV.map(([p,k]) => `<a href="#${p}" class="d2" data-go="${p}"${cur(p)}>${t(k)}${ic("arrow-right")}</a>`).join("")}</nav>
+<div class="menu-foot">${langSw()}<p class="small">${PHONE}</p></div>`;
+const footer = () => `
+<footer class="ft"><div class="wrap">
+  <div class="ft-grid">
+    <div style="display:grid;gap:12px"><a href="#home" class="wm" data-go="home">Brand Name</a><p class="small" style="max-width:36ch">${t("ft_tag")}</p></div>
+    <nav class="ft-nav" aria-label="Footer">${NAV.map(([p,k]) => `<a href="#${p}" data-go="${p}">${t(k)}</a>`).join("")}</nav>
+    <div class="ft-reach"><span>${ic("phone")}${PHONE}</span><span>${ic("facebook-logo")}${FB}</span><span>${ic("map-pin")}${L(PLACES[0].addr)}</span></div>
+  </div>
+  <p class="small ft-base">${t("ft_credit")}</p>
+</div></footer>`;
+
+const card = (b) => `
+<a href="#bean" class="card rv" data-bean="${b.slug}" data-roast="${b.roast}">
+  <div class="ph">${img(b.img, L(b.name))}</div>
+  <div class="cap"><h2 class="d3">${L(b.name)}</h2><p class="notes">${L(b.notes)}</p><p class="meta">${meta(b)}</p></div>
+</a>`;
+
+const pages = {
+  home: () => {
+    const main = bean("bolaven-natural"), rest = BEANS.filter((b) => b !== main);
+    return `
+<section class="hero">
+  <div class="hero-img">${img("hero")}</div><div class="hero-scrim"></div>
+  <div class="wrap" style="width:100%"><div class="hero-in">
+    <p class="lbl">${t("hero_eyebrow")}</p>
+    <h1 class="d1">${t("hero_h1")}</h1>
+    <p class="lede">${t("hero_sub")}</p>
+    <div class="ctas"><a href="#beans" class="btn pri" data-go="beans">${t("see_beans")}${ic("arrow-right")}</a><a href="#buy" class="btn ghost" data-go="buy">${t("nav_buy")}</a></div>
+  </div></div>
+</section>
+<section class="sec"><div class="wrap">
+  <div class="sec-head"><h2 class="d2 rv">${t("feat_h")}</h2><a href="#beans" class="tlink" data-go="beans">${t("all_beans")}${ic("arrow-right")}</a></div>
+  <div class="feat-grid">
+    <a href="#bean" class="feat-main rv" data-bean="${main.slug}">
+      <div class="ph">${img(main.img, L(main.name))}</div>
+      <div class="cap"><h3 class="d3">${L(main.name)}</h3><p class="notes">${L(main.notes)}</p><p class="meta">${meta(main)}</p></div>
+    </a>
+    <ul class="rows">${rest.map((b) => `
+      <li><a href="#bean" class="row rv" data-bean="${b.slug}">
+        <div class="ph">${img(b.img)}</div>
+        <div class="row-t"><h3 class="d4">${L(b.name)}</h3><p class="small">${L(b.notes)}</p><p class="meta">${meta(b)}</p></div>
+        ${ic("arrow-right")}
+      </a></li>`).join("")}
+    </ul>
+  </div>
+</div></section>
+<section class="origin">
+  <figure class="origin-fig">${img("cherries", t("origin_alt"))}</figure>
+  <div class="wrap origin-body">
+    <div class="origin-txt"><h2 class="d2 rv">${t("origin_h")}</h2><p class="body rv">${t("origin_p")}</p></div>
+    <dl class="facts">
+      <div class="rv"><dt class="lbl">${t("f_elev")}</dt><dd class="num">${t("f_elev_v")}</dd></div>
+      <div class="rv"><dt class="lbl">${t("f_where")}</dt><dd>${t("f_where_v")}</dd></div>
+      <div class="rv"><dt class="lbl">${t("f_harvest")}</dt><dd>${t("f_harvest_v")}</dd></div>
+    </dl>
+  </div>
+</section>
+<section class="sec"><div class="wrap brew-grid">
+  <figure class="brew-fig ph rv">${img("brew", "")}</figure>
+  <div class="brew-txt">
+    <h2 class="d2 rv">${t("brew_h")}</h2><p class="body rv">${t("brew_p")}</p>
+    <div class="methods">${METHODS.map((m) => `
+      <div class="m rv"><h3 class="m-name">${L(m.name)}</h3><p class="ratio">${m.ratio}</p>
+        <dl class="m-spec"><div><dt>${t("grind")}</dt><dd>${L(m.grind)}</dd></div><div><dt>${t("time")}</dt><dd class="num">${L(m.time)}</dd></div></dl></div>`).join("")}
+    </div>
+  </div>
+</div></section>
+<section class="band">
+  <div class="band-img">${img("texture")}</div>
+  <div class="wrap band-in"><h2 class="d2 rv">${t("band_h")}</h2><a href="#buy" class="btn pri rv" data-go="buy">${t("nav_buy")}${ic("arrow-right")}</a></div>
+</section>`;
+  },
+  beans: () => `
+<section class="page-head"><div class="wrap">
+  <h1 class="d1 sm">${t("beans_h")}</h1><p class="lede">${t("beans_p")}</p>
+  <div class="chips" role="group" aria-label="${t("s_roast")}">${["all","light","medium","dark"].map((r) => `<button class="chip" data-roast-filter="${r}" aria-pressed="${state.roast===r}">${r==="all" ? t("f_all") : t(r)}</button>`).join("")}</div>
+</div></section>
+<section class="sec pt0"><div class="wrap">
+  <div class="bean-grid" id="bean-grid">${BEANS.map(card).join("")}</div>
+  <p class="empty" id="bean-empty" hidden>${t("empty")}</p>
+</div></section>`,
+  bean: () => {
+    const b = bean(state.bean), m = METHODS[b.brew];
+    const spec = (k, v) => `<div><dt class="lbl">${t(k)}</dt><dd>${v}</dd></div>`;
+    return `
+<section><div class="wrap det-grid">
+  <figure class="det-fig ph">${img(b.img, L(b.name))}</figure>
+  <div class="det-body">
+    <a href="#beans" class="back" data-go="beans">${ic("arrow-left")}${t("all_beans")}</a>
+    <h1 class="d1 sm">${L(b.name)}</h1>
+    <p class="notes-lg">${L(b.notes)}</p>
+    <p class="body">${L(b.desc)}</p>
+    <dl class="specs">${spec("s_region", L(b.region))}${spec("s_elev", `<span class="num">${L(b.elev)}</span>`)}${spec("s_variety", L(b.variety))}${spec("s_process", L(b.process))}${spec("s_roast", t(b.roast))}${spec("s_bag", t("bag_v"))}</dl>
+    <div class="tip"><h2 class="lbl">${t("how_brew")}</h2>
+      <div class="tip-row"><span class="ratio">${m.ratio}</span><span><strong>${L(m.name)}</strong><br><span class="small">${t("grind")}: ${L(m.grind)}. ${t("time")}: ${L(m.time)}.</span></span></div></div>
+    <div><a href="#buy" class="btn pri" data-go="buy">${t("nav_buy")}${ic("arrow-right")}</a></div>
+  </div>
+</div></section>
+<section class="sec pt0"><div class="wrap">
+  <h2 class="d3 rv">${t("more")}</h2>
+  <div class="more-row">${BEANS.filter((x) => x !== b).map((x) => `
+    <a href="#bean" class="mini rv" data-bean="${x.slug}"><div class="ph">${img(x.img, L(x.name))}</div><div class="cap"><h3 class="d4">${L(x.name)}</h3><p class="meta">${L(x.notes)}</p></div></a>`).join("")}
+  </div>
+</div></section>`;
+  },
+  story: () => `
+<section class="page-head"><div class="wrap"><h1 class="d1">${t("story_h")}</h1></div></section>
+<figure class="full-fig">${img("drying", t("dry_cap"))}</figure>
+<div class="wrap"><p class="small cap-line">${t("dry_cap")}</p></div>
+<section class="sec"><div class="wrap"><div class="prose">
+  <p class="rv">${t("story_lede")}</p><p class="rv">${t("story_p1")}</p><p class="rv">${t("story_p2")}</p>
+</div></div></section>
+<section class="sec pt0"><div class="wrap steps-grid">
+  <figure class="steps-fig ph rv">${img("roast", "")}</figure>
+  <div><h2 class="d2 rv">${t("steps_h")}</h2>
+    <ol class="steps-list">${STEPS.map((s) => `<li class="rv"><h3>${L(s.h)}</h3><p>${L(s.p)}</p></li>`).join("")}</ol></div>
+</div></section>`,
+  buy: () => `
+<section class="page-head"><div class="wrap"><h1 class="d1 sm">${t("buy_h")}</h1><p class="lede">${t("buy_p")}</p></div></section>
+<section class="sec pt0"><div class="wrap contact-grid">
+  <div>${PLACES.map((p) => `
+    <article class="place rv"><h2 class="d3">${L(p.name)}</h2><p>${L(p.addr)}</p>
+      <p class="small">${ic("clock")}<span class="num">${L(p.hours)}</span></p>
+      <a class="maplink" href="https://www.google.com/maps/search/${encodeURIComponent(p.q)}" target="_blank" rel="noopener">${t("open_maps")}${ic("arrow-up-right")}</a></article>`).join("")}
+  </div>
+  <aside class="reach rv">
+    <figure class="reach-fig ph">${img("cafe", "")}</figure>
+    <div class="reach-in">
+      <h2 class="d3">${t("reach_h")}</h2><p class="body">${t("reach_p")}</p>
+      <div class="reach-row"><div class="v"><span class="small">${t("phone")}</span><strong class="num">${PHONE}</strong></div><button class="copy" data-copy="${PHONE}">${t("copy")}</button></div>
+      <div class="reach-row"><div class="v"><span class="small">${t("fb")}</span><strong>${FB}</strong></div><button class="copy" data-copy="${FB}">${t("copy")}</button></div>
+    </div>
+  </aside>
+</div></section>`,
+};
+
+/* ---------- render ---------- */
+let io;
+function applySkin() {
+  skin.className = `skin acc-${state.accent} face-${state.face}${state.rm === "1" ? " rm" : ""}`;
+  skin.setAttribute("lang", state.lang);
+  frame.className = `frame ${state.device}`;
+  const path = {home:"", beans:"/beans", bean:`/beans/${state.bean}`, story:"/story", buy:"/where-to-buy"}[state.page];
+  $("url").textContent = `brandname.la/${state.lang}${path}`;
+  document.querySelectorAll("[data-set]").forEach((b) => {
+    const [k, v] = b.dataset.set.split(":");
+    b.setAttribute("aria-pressed", String(state[k] === v));
+  });
+}
+function applyFilter() {
+  const grid = $("bean-grid"); if (!grid) return;
+  let n = 0;
+  grid.querySelectorAll(".card").forEach((c) => { const show = state.roast === "all" || c.dataset.roast === state.roast; c.hidden = !show; if (show) { n++; c.classList.remove("pre"); } });
+  $("bean-empty").hidden = n > 0;
+  site.querySelectorAll("[data-roast-filter]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.roastFilter === state.roast)));
+}
+function setupReveal() {
+  io && io.disconnect();
+  if (state.rm === "1") return;
+  const sr = screen.getBoundingClientRect();
+  io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.remove("pre"); io.unobserve(e.target); } }), {root: screen, threshold: 0.12});
+  site.querySelectorAll(".rv").forEach((el) => {
+    if (el.closest("[hidden]")) return;
+    if (el.getBoundingClientRect().top - sr.top > sr.height * 0.94) { el.classList.add("pre"); io.observe(el); }
+  });
+}
+function render(newPage) {
+  const top = screen.scrollTop;
+  site.innerHTML = header() + `<main${newPage && state.rm !== "1" ? ' class="ani"' : ""}>` + pages[state.page]() + "</main>" + footer();
+  menu.innerHTML = menuHTML();
+  applySkin(); applyFilter();
+  screen.scrollTop = newPage ? 0 : top;
+  setupReveal(); save();
+}
+function go(page, slug) {
+  state.page = page; if (slug) state.bean = slug;
+  closeMenu(false); render(true);
+}
+
+/* ---------- menu ---------- */
+function openMenu() { menu.classList.add("open"); const b = site.querySelector("[data-menu-open]"); b && b.setAttribute("aria-expanded", "true"); menu.querySelector("[data-menu-close]").focus({preventScroll: true}); }
+function closeMenu(refocus = true) {
+  if (!menu.classList.contains("open")) return;
+  menu.classList.remove("open");
+  const b = site.querySelector("[data-menu-open]");
+  if (b) { b.setAttribute("aria-expanded", "false"); refocus && b.focus({preventScroll: true}); }
+}
+
+/* ---------- events ---------- */
+skin.addEventListener("click", (e) => {
+  const el = e.target.closest("[data-go],[data-bean],[data-lang],[data-menu-open],[data-menu-close],[data-roast-filter],[data-copy]");
+  if (!el) return;
+  if (el.tagName === "A" && !el.target) e.preventDefault();
+  const d = el.dataset;
+  if (d.go) go(d.go);
+  else if (d.bean) go("bean", d.bean);
+  else if (d.lang) { state.lang = d.lang; const wasOpen = menu.classList.contains("open"); render(false); if (wasOpen) openMenu(); }
+  else if ("menuOpen" in d) openMenu();
+  else if ("menuClose" in d) closeMenu();
+  else if (d.roastFilter) { state.roast = d.roastFilter; applyFilter(); save(); }
+  else if (d.copy) {
+    const done = () => { el.textContent = t("copied"); setTimeout(() => (el.textContent = t("copy")), 1600); };
+    const fallback = () => { const s = el.parentElement.querySelector("strong"); const r = document.createRange(); r.selectNodeContents(s); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); };
+    try { navigator.clipboard.writeText(d.copy).then(done, fallback); } catch (err) { fallback(); }
+  }
+});
+skin.addEventListener("keydown", (e) => { if (e.key === "Escape") closeMenu(); });
+document.querySelector(".panel").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-set]"); if (!b) return;
+  const [k, v] = b.dataset.set.split(":");
+  if (k === "page") return go(v);
+  state[k] = v;
+  if (k === "lang") render(false);
+  else { applySkin(); if (k === "rm") setupReveal(); save(); }
+  if (k === "device") requestAnimationFrame(fit);
+});
+
+/* ---------- fit the device frame to the stage ---------- */
+const DEV = {phone:[390,844], tablet:[820,1180], desktop:[1280,800]};
+function fit() {
+  const [w, h] = DEV[state.device];
+  skin.style.width = w + "px"; skin.style.height = h + "px";
+  const fw = frame.offsetWidth, fh = frame.offsetHeight;
+  const sb = stage.getBoundingClientRect();
+  const cs = getComputedStyle(stage);
+  const availW = sb.width - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  const narrow = innerWidth <= 900;
+  const availH = narrow ? Infinity : Math.max(innerHeight - 56, 420);
+  const s = Math.min(1, availW / fw, availH / fh);
+  frame.style.transform = `scale(${s})`;
+  fbox.style.width = fw * s + "px"; fbox.style.height = fh * s + "px";
+}
+new ResizeObserver(fit).observe(stage);
+addEventListener("resize", fit);
+
+render(true); fit();
+</script>
