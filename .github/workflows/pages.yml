@@ -2,7 +2,7 @@ name: Deploy preview to GitHub Pages
 
 on:
   push:
-    branches: [main, feat/placeholder-site]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
